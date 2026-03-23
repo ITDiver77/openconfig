@@ -1,0 +1,7 @@
+{
+  "name": "biome-auto-fix",
+  "version": "1.0.0",
+  "description": "Auto-format JS/TS files after edits",
+  "main": "index.ts",
+  "type": "module"
+}

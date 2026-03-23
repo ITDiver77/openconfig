@@ -1,0 +1,85 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "$comment": "OpenCode Universal Configuration",
+
+  "agent": {
+    "plan": {
+      "model": "zen/minimax-m2.5-free",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask"
+      }
+    },
+    "build": {
+      "model": "zen/minimax-m2.5-free"
+    },
+    "review": {
+      "model": "zen/minimax-m2.5-free"
+    }
+  },
+
+  "disabled_hooks": [
+    "auto-update-checker"
+  ],
+
+  "permission": {
+    "skill": {
+      "*": "allow"
+    },
+    "bash": {
+      "sudo systemctl restart *": "ask",
+      "sudo systemctl status *": "ask",
+      "ruff check *": "allow",
+      "ruff format *": "allow",
+      "mypy *": "allow",
+      "pytest *": "allow",
+      "biome check *": "allow",
+      "biome format *": "allow",
+      "npm test *": "allow",
+      "npm run test *": "allow",
+      "git *": "allow",
+      "./scripts/setup-dev.sh": "allow",
+      "source *": "allow",
+      "docker-compose *": "ask",
+      "python *": "allow"
+    },
+    "read": "allow",
+    "edit": "ask"
+  },
+
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    }
+  },
+
+  "command": {
+    "lint": {
+      "template": "Run linting on the codebase.\nDetect file type:\n- Python (.py): ruff check\n- JS/TS (.js/.ts/.jsx/.tsx): biome check\n{{command}}"
+    },
+    "format": {
+      "template": "Format code:\n- Python: ruff format\n- JS/TS: biome format --write\n{{command}}"
+    },
+    "typecheck": {
+      "template": "Run type checking:\n- Python: mypy\n{{command}}"
+    },
+    "test": {
+      "template": "Run tests:\n- First run ./scripts/setup-dev.sh if exists\n- Then pytest or npm test\n{{command}}"
+    },
+    "ci": {
+      "template": "Run full CI pipeline:\n1. lint\n2. format check\n3. typecheck\n4. tests\n{{command}}"
+    }
+  },
+
+  "instructions": [
+    "AGENTS.md",
+    "GLOBAL_WORKFLOW.md"
+  ],
+
+  "plugin": [
+    "ruff-auto-fix",
+    "biome-auto-fix",
+    "setup-dev-hook"
+  ]
+}
