@@ -24,6 +24,13 @@ Follow the workflow defined in `GLOBAL_WORKFLOW.md`.
 - MUST run `setup-dev.sh` before any tests
 - Setup script handles: migrations, docker-compose, service startup
 
+### Multi-Repository Projects
+When working with projects that contain git submodules or child repositories:
+- Each child project has its own `context.md`, `todo.md`, `changelog.md`
+- Check child project docs before main project docs
+- Quality gates should be run within each child project directory
+- Link cross-project tasks in parent `todo.md`
+
 ## Development Workflow
 
 1. **Analyze** → Understand current state from project files
@@ -98,6 +105,43 @@ For projects with `scripts/setup-dev.sh`:
 - Functional components (React)
 - Named exports preferred
 - Biome for formatting and linting
+
+## Tooling Commands by Language
+
+### Python
+| Tool | Check | Fix | Config |
+|------|-------|-----|--------|
+| ruff | `ruff check .` | `ruff check --fix .` | `pyproject.toml` |
+| mypy | `mypy .` | N/A | `pyproject.toml` |
+| pytest | `pytest` | N/A | `pyproject.toml` |
+
+### TypeScript/JavaScript
+| Tool | Check | Fix | Config |
+|------|-------|-----|--------|
+| biome | `biome check .` | `biome check --write .` | `biome.json` |
+| tsc | `tsc --noEmit` | N/A | `tsconfig.json` |
+
+## Documentation Standards
+
+### Required Project Files
+Each project should have:
+- `project.md` - What the project is and does
+- `todo.md` - Current and planned work
+- `context.md` - Technical patterns and conventions
+- `changelog.md` - Change history
+
+### Documentation Updates
+- Update `changelog.md` at end of each session
+- Move completed items from `todo.md` to `changelog.md`
+- Update `context.md` when adopting new patterns
+
+## Multi-Project Session Workflow
+
+1. **Identify scope**: Is the task within one project or cross-project?
+2. **Check dependencies**: Are required endpoints/fields available?
+3. **Update parent docs**: If cross-project, update parent `todo.md`
+4. **Implement in order**: Start with dependencies, then dependents
+5. **Test integration**: Verify projects work together
 
 ## Skills
 
