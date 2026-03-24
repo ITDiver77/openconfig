@@ -11,7 +11,8 @@ mkdir -p "${SKILLS_DIR}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
 
-cat > "${PROJECT_OPENCODE}/AGENTS.md" << 'EOF'
+if [ ! -f "${PROJECT_OPENCODE}/AGENTS.md" ]; then
+    cat > "${PROJECT_OPENCODE}/AGENTS.md" << 'EOF'
 # Project-Specific Rules
 
 ## Session Start Protocol
@@ -28,8 +29,13 @@ Add project-specific rules below this line.
 These take precedence over global config.
 
 EOF
+    echo "  - Created .opencode/AGENTS.md"
+else
+    echo "  - Skipped .opencode/AGENTS.md (exists)"
+fi
 
-cat > "$(pwd)/project.md" << 'EOF'
+if [ ! -f "$(pwd)/project.md" ]; then
+    cat > "$(pwd)/project.md" << 'EOF'
 # Project Name
 
 ## Overview
@@ -74,8 +80,13 @@ project/
 - [Service 1]: [Purpose]
 - [Service 2]: [Purpose]
 EOF
+    echo "  - Created project.md"
+else
+    echo "  - Skipped project.md (exists)"
+fi
 
-cat > "$(pwd)/todo.md" << 'EOF'
+if [ ! -f "$(pwd)/todo.md" ]; then
+    cat > "$(pwd)/todo.md" << 'EOF'
 # TODO
 
 ## Roadmap
@@ -103,8 +114,13 @@ cat > "$(pwd)/todo.md" << 'EOF'
 - [ ] [Future task 1]
 - [ ] [Future task 2]
 EOF
+    echo "  - Created todo.md"
+else
+    echo "  - Skipped todo.md (exists)"
+fi
 
-cat > "$(pwd)/context.md" << 'EOF'
+if [ ! -f "$(pwd)/context.md" ]; then
+    cat > "$(pwd)/context.md" << 'EOF'
 # Context
 
 ## Project Conventions
@@ -146,8 +162,13 @@ cat > "$(pwd)/context.md" << 'EOF'
 ## Learned Lessons
 - [Lesson 1]: [Description]
 EOF
+    echo "  - Created context.md"
+else
+    echo "  - Skipped context.md (exists)"
+fi
 
-cat > "$(pwd)/changelog.md" << 'EOF'
+if [ ! -f "$(pwd)/changelog.md" ]; then
+    cat > "$(pwd)/changelog.md" << 'EOF'
 # Changelog
 
 All notable changes to this project are documented here.
@@ -182,16 +203,13 @@ All notable changes to this project are documented here.
 ### Notes
 - [Any observations or notes]
 EOF
+    echo "  - Created changelog.md"
+else
+    echo "  - Skipped changelog.md (exists)"
+fi
 
 echo ""
 echo "✓ Project setup complete!"
-echo ""
-echo "Created files:"
-echo "  - .opencode/AGENTS.md"
-echo "  - project.md"
-echo "  - todo.md"
-echo "  - context.md"
-echo "  - changelog.md"
 echo ""
 echo "Next steps:"
 echo "  1. Edit project.md with your project details"

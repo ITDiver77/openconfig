@@ -23,7 +23,11 @@ if [ ! -d "${SCRIPTS_DIR}" ]; then
     mkdir -p "${SCRIPTS_DIR}"
 fi
 
-cat > "${SCRIPTS_DIR}/setup-dev.sh" << 'SCRIPT_EOF'
+if [ -f "${SCRIPTS_DIR}/setup-dev.sh" ]; then
+    echo "⚠ scripts/setup-dev.sh already exists, skipping creation"
+    echo "  Delete it manually if you want to recreate with defaults"
+else
+    cat > "${SCRIPTS_DIR}/setup-dev.sh" << 'SCRIPT_EOF'
 #!/bin/bash
 set -e
 
@@ -87,8 +91,8 @@ fi
 echo "✓ Development environment ready!"
 SCRIPT_EOF
 
-if [ "$STATEFUL" = true ]; then
-    cat >> "${SCRIPTS_DIR}/setup-dev.sh" << 'STATEFUL_EOF'
+    if [ "$STATEFUL" = true ]; then
+        cat >> "${SCRIPTS_DIR}/setup-dev.sh" << 'STATEFUL_EOF'
 
 # Stateful project specific setup
 echo "Running stateful services setup..."
@@ -101,14 +105,12 @@ echo "Running stateful services setup..."
 # - Start background workers
 
 STATEFUL_EOF
+    fi
+
+    chmod +x "${SCRIPTS_DIR}/setup-dev.sh"
+    echo "✓ Created scripts/setup-dev.sh"
 fi
 
-chmod +x "${SCRIPTS_DIR}/setup-dev.sh"
-
-echo ""
-echo "✓ Created scripts/setup-dev.sh"
-echo ""
-echo "Edit the script to customize your setup."
 echo ""
 echo "For stateless projects, the script will:"
 echo "  - Create/activate virtual environment"
