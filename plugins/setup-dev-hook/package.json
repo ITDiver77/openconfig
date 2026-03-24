@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "description": "Run setup-dev.sh before tests",
   "main": "index.ts",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@opencode-ai/plugin": "latest"
+  }
 }

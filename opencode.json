@@ -1,6 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
+  "model": "zen/minimax-m2.5-free",
+
+  "default_agent": "build",
+
   "mode": {
     "plan": {
       "model": "zen/minimax-m2.5-free",
@@ -64,6 +68,12 @@
     "AGENTS.md",
     "GLOBAL_WORKFLOW.md"
   ],
+
+  "skills": {
+    "paths": [
+      "skills"
+    ]
+  },
 
   "plugin": [
     "ruff-auto-fix",
