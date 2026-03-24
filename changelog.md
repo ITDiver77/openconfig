@@ -9,6 +9,23 @@ All notable changes to this project are documented here.
 
 ---
 
+## Session - 2026-03-24
+
+### Completed
+- Fixed invalid OpenCode config keys causing service startup failure
+- Removed broken self-referencing symlinks
+
+### Changes
+- opencode.json: Removed `$comment`, `disabled_hooks`, `mcpServers` (invalid keys)
+- opencode.json: Changed `agent.*` to `mode.*` to match OpenCode schema
+- Removed symlinks: agents/agents, configs/configs, plugins/plugins, skills/skills
+
+### Notes
+- OpenCode was failing with: "Unrecognized keys: $comment, disabled_hooks, mcpServers"
+- Config now validates successfully against OpenCode schema
+
+---
+
 ## Session - 2026-03-22
 
 ### Completed

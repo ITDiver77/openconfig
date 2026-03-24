@@ -5,6 +5,11 @@
 ### In Progress
 - [ ] Verify config works with OpenCode
 
+### Done (this session)
+- [x] Fix invalid OpenCode config keys: $comment, disabled_hooks, mcpServers
+- [x] Change agent.* to mode.* to match OpenCode schema
+- [x] Remove broken symlinks (agents/agents, configs/configs, etc.)
+
 ### Pending
 - [ ] Test in actual Python project
 - [ ] Test in actual JS/TS project
