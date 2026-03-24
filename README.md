@@ -10,7 +10,7 @@ Universal configuration for Python and JavaScript/TypeScript development with Op
 - **Global Workflow**: Structured development workflow for all sessions
 - **Skills**: Planning, code review, test generation, project analysis
 - **Plugins**: Auto-format after edits, pre-test setup hook
-- **MCP**: Context7 for up-to-date library documentation
+- **MCP**: Context7, Filesystem, GitHub, Brave Search
 
 ## Installation
 
@@ -136,10 +136,33 @@ openconfig/
     └── frontend/
 ```
 
+## MCP Servers
+
+The configuration includes several MCP servers:
+
+| Server | Purpose | Enabled | Requires |
+|--------|---------|---------|----------|
+| Context7 | Up-to-date library documentation | Yes | No |
+| Filesystem | File operations outside project | Yes | No |
+| GitHub | GitHub API integration | No | `GITHUB_PERSONAL_ACCESS_TOKEN` |
+| Brave Search | Web search | No | `BRAVE_API_KEY` |
+
+### Enabling Optional MCPs
+
+To enable GitHub MCP:
+1. Create a GitHub Personal Access Token
+2. Set `enabled` to `true` in `opencode.json`
+3. Add your token to the environment variable
+
+To enable Brave Search:
+1. Get a Brave API key
+2. Set `enabled` to `true` in `opencode.json`
+3. Add your API key to the environment variable
+
 ## Requirements
 
 - Python 3.9+
-- Node.js 18+ (for Biome)
+- Node.js 18+ (for Biome and MCP)
 - ruff: `pip install ruff`
 - mypy: `pip install mypy`
 - pytest: `pip install pytest`

@@ -48,7 +48,7 @@ openconfig/
 - Atomic commits with detailed messages
 - Auto-format after edits (ruff/biome)
 - Pre-test setup hook
-- MCP: context7 for library docs
+- MCP servers: Context7, Filesystem, GitHub, Brave Search
 
 ## Commands
 | Command | Purpose |
@@ -60,3 +60,6 @@ openconfig/
 ## External Services
 - OpenCode AI: Primary assistant
 - Context7 MCP: Library documentation
+- Filesystem MCP: File operations
+- GitHub MCP: GitHub API integration
+- Brave Search MCP: Web search
