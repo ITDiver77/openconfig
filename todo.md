@@ -10,6 +10,11 @@
 - [x] Change agent.* to mode.* to match OpenCode schema
 - [x] Remove broken symlinks (agents/agents, configs/configs, etc.)
 - [x] Update scripts to not overwrite existing files
+- [x] Add skills.paths to enable custom skills
+- [x] Add default_agent and model settings
+- [x] Fix plugin dependencies
+- [x] Add MCP configuration (Context7)
+- [x] Update install-global.sh with ln -nsf and project files
 
 ### Pending
 - [ ] Test in actual Python project
