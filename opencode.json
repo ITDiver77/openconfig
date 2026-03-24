@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "$comment": "OpenCode Universal Configuration",
+  //"$comment": "OpenCode Universal Configuration",
 
   "agent": {
     "plan": {
@@ -18,9 +18,9 @@
     }
   },
 
-  "disabled_hooks": [
-    "auto-update-checker"
-  ],
+//  "disabled_hooks": [
+//    "auto-update-checker"
+//  ],
 
   "permission": {
     "skill": {
@@ -47,12 +47,12 @@
     "edit": "ask"
   },
 
-  "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@latest"]
-    }
-  },
+  //"mcpServers": {
+  //  "context7": {
+  //    "command": "npx",
+  //    "args": ["-y", "@upstash/context7-mcp@latest"]
+  //  }
+ // },
 
   "command": {
     "lint": {
