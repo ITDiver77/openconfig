@@ -9,6 +9,7 @@
 - [x] Fix invalid OpenCode config keys: $comment, disabled_hooks, mcpServers
 - [x] Change agent.* to mode.* to match OpenCode schema
 - [x] Remove broken symlinks (agents/agents, configs/configs, etc.)
+- [x] Update scripts to not overwrite existing files
 
 ### Pending
 - [ ] Test in actual Python project

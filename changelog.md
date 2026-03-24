@@ -14,15 +14,19 @@ All notable changes to this project are documented here.
 ### Completed
 - Fixed invalid OpenCode config keys causing service startup failure
 - Removed broken self-referencing symlinks
+- Updated scripts to not overwrite existing files
 
 ### Changes
 - opencode.json: Removed `$comment`, `disabled_hooks`, `mcpServers` (invalid keys)
 - opencode.json: Changed `agent.*` to `mode.*` to match OpenCode schema
 - Removed symlinks: agents/agents, configs/configs, plugins/plugins, skills/skills
+- install-project.sh: Now checks if files exist before creating
+- bootstrap.sh: Now checks if setup-dev.sh exists before creating
 
 ### Notes
 - OpenCode was failing with: "Unrecognized keys: $comment, disabled_hooks, mcpServers"
 - Config now validates successfully against OpenCode schema
+- Scripts now safe to run multiple times without losing customizations
 
 ---
 
