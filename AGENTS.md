@@ -3,7 +3,7 @@
 ## Session Start Protocol
 
 **FIRST:** Read these files at the start of EVERY session:
-1. `project.md` - Full project overview
+1. `product.md` - Full project overview
 2. `todo.md` - Current tasks and plans
 3. `context.md` - Important patterns and decisions
 4. `changelog.md` - Recent changes in previous sessions
@@ -125,7 +125,7 @@ For projects with `scripts/setup-dev.sh`:
 
 ### Required Project Files
 Each project should have:
-- `project.md` - What the project is and does
+- `product.md` - What the project is and does
 - `todo.md` - Current and planned work
 - `context.md` - Technical patterns and conventions
 - `changelog.md` - Change history

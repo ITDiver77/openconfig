@@ -16,7 +16,7 @@
 - [x] Add MCP configuration (Context7)
 - [x] Update install-global.sh with ln -nsf and project files
 - [x] Add additional MCP servers: Filesystem, GitHub, Brave Search
-- [x] Update README and project.md with MCP documentation
+- [x] Update README and product.md with MCP documentation
 
 ### Pending
 - [ ] Test in actual Python project

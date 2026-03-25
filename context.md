@@ -21,7 +21,7 @@
 
 ### Project Files Location
 - Date: 2026-03-22
-- Decision: project.md, todo.md, context.md, changelog.md in project root
+- Decision: product.md, todo.md, context.md, changelog.md in project root
 - Rationale: OpenCode reads these automatically
 
 ## Gotchas

@@ -6,7 +6,7 @@ Universal configuration for Python and JavaScript/TypeScript development with Op
 
 - **Python**: ruff (linting/formatting), mypy (type checking), pytest (testing), src/ layout
 - **Frontend**: Biome (ESLint + Prettier alternative for JS/TS)
-- **Multi-Session**: project.md, todo.md, context.md, changelog.md for persistent project knowledge
+- **Multi-Session**: product.md, todo.md, context.md, changelog.md for persistent project knowledge
 - **Global Workflow**: Structured development workflow for all sessions
 - **Skills**: Planning, code review, test generation, project analysis
 - **Plugins**: Auto-format after edits, pre-test setup hook
@@ -32,7 +32,7 @@ cd your-project
 ```
 
 Creates:
-- `project.md` - Project description template
+- `product.md` - Project description template
 - `todo.md` - Tasks template
 - `context.md` - Patterns & decisions template
 - `changelog.md` - Session log template
@@ -66,7 +66,7 @@ Creates `scripts/setup-dev.sh` template with:
 
 ### Session Workflow
 
-1. **Session Start**: Read project files (project.md, todo.md, context.md, changelog.md)
+1. **Session Start**: Read project files (product.md, todo.md, context.md, changelog.md)
 2. **Setup**: `setup-dev.sh` runs automatically (if exists)
 3. **Analyze**: Understand project state
 4. **Plan**: Review/update todo.md
@@ -96,7 +96,7 @@ Closes #123
 
 | File | Purpose | Updated By |
 |------|---------|------------|
-| `project.md` | Full project overview, architecture, tech stack | Analyst |
+| `product.md` | Full project overview, architecture, tech stack | Analyst |
 | `todo.md` | Current tasks, roadmap, priorities | Planner |
 | `context.md` | Patterns, conventions, gotchas | All agents |
 | `changelog.md` | Session summaries, what changed | All agents |

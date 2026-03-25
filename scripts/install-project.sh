@@ -18,7 +18,7 @@ if [ ! -f "${PROJECT_OPENCODE}/AGENTS.md" ]; then
 ## Session Start Protocol
 
 At the start of EVERY session, FIRST read these files:
-1. `project.md` - Full project overview
+1. `product.md` - Full project overview
 2. `todo.md` - Current tasks and plans
 3. `context.md` - Important patterns and decisions
 4. `changelog.md` - Recent changes in previous sessions
@@ -34,8 +34,8 @@ else
     echo "  - Skipped .opencode/AGENTS.md (exists)"
 fi
 
-if [ ! -f "$(pwd)/project.md" ]; then
-    cat > "$(pwd)/project.md" << 'EOF'
+if [ ! -f "$(pwd)/product.md" ]; then
+    cat > "$(pwd)/product.md" << 'EOF'
 # Project Name
 
 ## Overview
@@ -80,9 +80,9 @@ project/
 - [Service 1]: [Purpose]
 - [Service 2]: [Purpose]
 EOF
-    echo "  - Created project.md"
+    echo "  - Created product.md"
 else
-    echo "  - Skipped project.md (exists)"
+    echo "  - Skipped product.md (exists)"
 fi
 
 if [ ! -f "$(pwd)/todo.md" ]; then
@@ -212,6 +212,6 @@ echo ""
 echo "✓ Project setup complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Edit project.md with your project details"
+echo "  1. Edit product.md with your project details"
 echo "  2. Update todo.md with initial tasks"
 echo "  3. For stateful projects, run: ./path/to/openconfig/scripts/bootstrap.sh --stateful"

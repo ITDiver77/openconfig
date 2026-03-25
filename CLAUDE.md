@@ -4,7 +4,7 @@ If no `AGENTS.md` is found, these rules apply:
 
 ## Basic Guidelines
 
-1. **Read project files** at session start (project.md, todo.md, context.md, changelog.md)
+1. **Read project files** at session start (product.md, todo.md, context.md, changelog.md)
 2. **Follow the workflow** defined in GLOBAL_WORKFLOW.md
 3. **Use type hints** in Python, strict TypeScript in JS/TS
 4. **Run quality checks** before commits (lint, format, typecheck, test)

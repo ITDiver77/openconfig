@@ -7,7 +7,7 @@
 Before ANY other work, read these files:
 
 ```
-1. project.md      - Project overview, architecture, tech stack
+1. product.md      - Project overview, architecture, tech stack
 2. todo.md         - Current tasks, roadmap, priorities
 3. context.md      - Patterns, conventions, gotchas
 4. changelog.md    - What changed in previous sessions
@@ -35,7 +35,7 @@ From project files, understand:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      ANALYZE PROJECT                            │
-│  • Read project.md for context                                 │
+│  • Read product.md for context                                 │
 │  • Review todo.md for pending tasks                           │
 │  • Check changelog.md for recent changes                       │
 │  • Identify blockers or dependencies                           │

@@ -3,7 +3,7 @@
 ## Session Start Protocol
 
 **FIRST:** Read these files at the start of EVERY session:
-1. `project.md` - Full project overview
+1. `product.md` - Full project overview
 2. `todo.md` - Current tasks and plans
 3. `context.md` - Important patterns and decisions
 4. `changelog.md` - Recent changes in previous sessions
