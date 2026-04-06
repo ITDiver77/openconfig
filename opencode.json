@@ -1,20 +1,20 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
-  "model": "zen/minimax-m2.5-free",
+  "model": "zai-coding-plan/glm-5.1",
 
   "default_agent": "build",
 
   "mode": {
     "plan": {
-      "model": "zen/minimax-m2.5-free",
+      "model": "zai-coding-plan/glm-5.1",
       "permission": {
         "edit": "ask",
         "bash": "ask"
       }
     },
     "build": {
-      "model": "zen/minimax-m2.5-free"
+      "model": "zai-coding-plan/glm-5.1"
     },
     "review": {
       "model": "zen/minimax-m2.5-free"
@@ -30,23 +30,32 @@
       "sudo systemctl status *": "ask",
       "ruff check *": "allow",
       "ruff format *": "allow",
+      "ruff check --fix *": "allow",
       "mypy *": "allow",
       "pytest *": "allow",
       "biome check *": "allow",
       "biome format *": "allow",
       "npm test *": "allow",
       "npm run test *": "allow",
+      "npx jest *": "allow",
+      "npx vitest *": "allow",
       "git *": "allow",
       "./scripts/setup-dev.sh": "allow",
       "source *": "allow",
-      "docker-compose *": "ask",
-      "python *": "allow"
+      "docker compose build *": "ask",
+      "docker compose up *": "ask",
+      "docker compose *": "ask",
+      "python *": "allow",
+      "node *": "allow"
     },
     "read": "allow",
     "edit": "ask"
   },
 
   "command": {
+    "start": {
+      "template": "MEMORY REFRESH: Re-read all instruction files.\n1. Read AGENTS.md\n2. Read GLOBAL_WORKFLOW.md\n3. Read agents/ directory for all agent definitions\n4. Read deployment.md\n5. Read todo.md for current state\nThen confirm you are ready as orchestrator."
+    },
     "lint": {
       "template": "Run linting on the codebase.\nDetect file type:\n- Python (.py): ruff check\n- JS/TS (.js/.ts/.jsx/.tsx): biome check\n{{command}}"
     },
@@ -54,13 +63,19 @@
       "template": "Format code:\n- Python: ruff format\n- JS/TS: biome format --write\n{{command}}"
     },
     "typecheck": {
-      "template": "Run type checking:\n- Python: mypy\n{{command}}"
+      "template": "Run type checking:\n- Python: mypy\n- JS/TS: tsc --noEmit\n{{command}}"
     },
     "test": {
       "template": "Run tests:\n- First run ./scripts/setup-dev.sh if exists\n- Then pytest or npm test\n{{command}}"
     },
     "ci": {
       "template": "Run full CI pipeline:\n1. lint\n2. format check\n3. typecheck\n4. tests\n{{command}}"
+    },
+    "deploy": {
+      "template": "DEPLOY: Execute deployment procedure from deployment.md.\n1. Run all quality gates (lint, format, typecheck, test)\n2. If all pass: docker compose build --no-cache -f ../Dockerfile && docker compose up -d\n3. If any fail: report and stop\n{{command}}"
+    },
+    "review": {
+      "template": "CODE REVIEW: Launch code-reviewer agent.\nThe reviewer uses Minimax M2.5 model.\nReview all uncommitted changes with severity-based findings.\nReturn structured verdict: APPROVED, ISSUES_FOUND, or DEBATE_NEEDED.\n{{command}}"
     }
   },
 

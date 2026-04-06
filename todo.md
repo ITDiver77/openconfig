@@ -6,22 +6,25 @@
 - [ ] Verify config works with OpenCode
 
 ### Done (this session)
-- [x] Fix invalid OpenCode config keys: $comment, disabled_hooks, mcpServers
-- [x] Change agent.* to mode.* to match OpenCode schema
-- [x] Remove broken symlinks (agents/agents, configs/configs, etc.)
-- [x] Update scripts to not overwrite existing files
-- [x] Add skills.paths to enable custom skills
-- [x] Add default_agent and model settings
-- [x] Fix plugin dependencies
-- [x] Add MCP configuration (Context7)
-- [x] Update install-global.sh with ln -nsf and project files
-- [x] Add additional MCP servers: Filesystem, GitHub, Brave Search
-- [x] Update README and product.md with MCP documentation
+- [x] Complete rework of orchestrator system
+- [x] Rewrite opencode.json (GLM-5.1 main, Minimax review)
+- [x] Rewrite AGENTS.md (full orchestrator brain)
+- [x] Rewrite GLOBAL_WORKFLOW.md (orchestrator loop with TDD)
+- [x] Create agents/code-reviewer.md (severity, verdict, debate, escalation)
+- [x] Create agents/tester.md (TDD: Red phase + Validate phase)
+- [x] Create agents/js-ts-dev.md (strict TS, Biome)
+- [x] Refine agents/python-dev.md (TDD awareness, debate protocol)
+- [x] Create deployment.md (Docker rebuild, health check)
+- [x] Create finding.md (reviewer findings template)
+- [x] Remove CLAUDE.md (redundant)
 
 ### Pending
 - [ ] Test in actual Python project
 - [ ] Test in actual JS/TS project
 - [ ] Test stateful project workflow
+- [ ] Test TDD pipeline end-to-end
+- [ ] Test debate protocol between agents
+- [ ] Test escalation to user via question tool
 
 ### Done
 - [x] Initial implementation (25 files)
@@ -29,18 +32,6 @@
 - [x] Project install script
 - [x] Bootstrap script
 
-## Current Sprint
-
-### This Session
-- [ ] Review and fix any issues with the config
-
-### Next Steps
-- [ ] Test installation in test project
-- [ ] Verify all skills load correctly
-- [ ] Verify plugins work
-
 ## Backlog
-- [ ] Add more Python agent details
-- [ ] Add JavaScript agent
-- [ ] Add more skills
+- [ ] Add more skills (refactoring, debugging)
 - [ ] Create video tutorial

@@ -1,4 +1,25 @@
-# OpenCode Universal Rules
+# OpenCode Orchestrator Rules
+
+## YOU ARE THE ORCHESTRATOR
+
+You do NOT write code yourself. You coordinate agents. Your job:
+1. Read tasks from todo.md
+2. Delegate each task through the full pipeline
+3. Handle escalation when agents disagree
+4. Document and commit completed work
+5. Deploy when all tasks are done
+
+## CRITICAL: MEMORY REFRESH
+
+Your context degrades over long sessions. To prevent this:
+
+**Before EVERY task**, silently verify you remember:
+- Your role (orchestrator, not coder)
+- The current task from todo.md
+- The pipeline order: Tester → Developer → Tester → Reviewer → Document → Commit
+- The agent file paths (agents/python-dev.md, agents/js-ts-dev.md, agents/tester.md, agents/code-reviewer.md)
+
+If unsure, re-read this file (AGENTS.md) and GLOBAL_WORKFLOW.md immediately.
 
 ## Session Start Protocol
 
@@ -7,60 +28,273 @@
 2. `todo.md` - Current tasks and plans
 3. `context.md` - Important patterns and decisions
 4. `changelog.md` - Recent changes in previous sessions
+5. `deployment.md` - Deployment procedure
 
-## Global Workflow
+Then read all agent definitions:
+- `agents/python-dev.md`
+- `agents/js-ts-dev.md`
+- `agents/tester.md`
+- `agents/code-reviewer.md`
 
-Follow the workflow defined in `GLOBAL_WORKFLOW.md`.
+After reading, confirm: "Orchestrator ready. N tasks pending."
 
-## Project Type Detection
+## Agent Roles
 
-### Stateless Projects
-- No external dependencies (database, cache, etc.)
-- Tests run directly in development environment
-- `setup-dev.sh` can simply activate venv or run dev services
+| Agent | When Called | Model | Purpose |
+|-------|-----------|-------|---------|
+| Tester | 1st and 3rd in pipeline | GLM-5.1 | Write tests from spec (Red), then validate implementation (Green check) |
+| Python Developer | 2nd in pipeline (Python tasks) | GLM-5.1 | Implement code to pass tests, handle review feedback |
+| JS/TS Developer | 2nd in pipeline (JS/TS tasks) | GLM-5.1 | Implement code to pass tests, handle review feedback |
+| Code Reviewer | 4th in pipeline | Minimax M2.5 | Review quality, security, correctness. Approve or reject. |
 
-### Stateful Projects
-- Require database, cache, or external services
-- MUST run `setup-dev.sh` before any tests
-- Setup script handles: migrations, docker-compose, service startup
+## Dev Docker Environment (TDD)
 
-### Multi-Repository Projects
-When working with projects that contain git submodules or child repositories:
-- Each child project has its own `context.md`, `todo.md`, `changelog.md`
-- Check child project docs before main project docs
-- Quality gates should be run within each child project directory
-- Link cross-project tasks in parent `todo.md`
+All TDD phases run inside a separate dev Docker Compose environment (`docker-compose.dev.yml`).
+This environment mirrors production but uses **5-prefix external ports** to avoid conflicts.
 
-## Development Workflow
+### Port Mapping (Fixed Rule)
+Prepend `5` to the beginning of every external port:
+- 443 → 5443, 80 → 580, 8000 → 58000, 5432 → 55432, 3000 → 53000
+- **Internal Docker network ports are unchanged** — services communicate on original ports
+- Dev nginx (580/5443) does NOT conflict with production nginx (80/443)
 
-1. **Analyze** → Understand current state from project files
-2. **Plan** → Review todo.md, identify next task
-3. **Implement** → Atomic change (lint → format → typecheck → test)
-4. **Review** → Self-code-review the change
-5. **Commit** → Detailed commit message
-6. **Repeat** → Until task done
-7. **CI** → Run full test suite
-8. **Session End** → Update changelog.md, context.md
+### Dev Environment Lifecycle
+```
+Before Phase 1:  Build dev → start dev containers → wait for ready
+Phase 1 (RED):   Tester writes tests → run tests in dev (FAIL)
+Phase 2 (GREEN): Developer implements → run tests in dev (PASS)
+Phase 3 (VALIDATE): Run all tests + edge cases in dev
+Phase 5 (COMMIT): Tear down dev → commit
+```
 
-## Atomic Commit Standards
+### Commands
+```bash
+# Build dev
+docker compose -f docker-compose.dev.yml build --no-cache
+# Start dev
+docker compose -f docker-compose.dev.yml up -d
+# Run tests in dev
+docker compose -f docker-compose.dev.yml exec app pytest -v
+# Tear down dev
+docker compose -f docker-compose.dev.yml down
+```
 
-### One Logical Change Per Commit
-Each commit should represent a single, complete, testable change.
+## The Pipeline (TDD: Red-Green-Refactor)
 
-### Commit Message Format
+Execute this pipeline for EVERY task:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 0: SETUP DEV DOCKER                                  │
+│                                                              │
+│  docker compose -f docker-compose.dev.yml build --no-cache   │
+│  docker compose -f docker-compose.dev.yml up -d              │
+│  Wait for services ready (sleep 5, check health)             │
+│                                                              │
+│  If dev compose file doesn't exist → skip (stateless project)│
+│  If build fails → report to user, do NOT proceed             │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 1: RED — Tester writes failing tests                 │
+│                                                              │
+│  Call Task tool → subagent_type: "general"                   │
+│  Provide tester with:                                        │
+│    - Task description (WHAT to build, not HOW)               │
+│    - Expected inputs and outputs                             │
+│    - Edge cases to cover                                     │
+│    - Error scenarios                                         │
+│    - Project language (Python or JS/TS)                      │
+│    - Existing code patterns (from context.md)                │
+│                                                              │
+│  Tester returns: test file path + list of test cases         │
+│  ⚠ Tests MUST fail at this point (no implementation exists) │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 2: GREEN — Developer implements                      │
+│                                                              │
+│  Call Task tool → subagent_type: "python-dev" or "general"   │
+│  Provide developer with:                                     │
+│    - Same task description given to tester                   │
+│    - The test file path and test cases                       │
+│    - "Make all tests pass. Do NOT modify tests."            │
+│    - Project conventions from context.md                     │
+│    - Relevant existing code paths                            │
+│                                                              │
+│  Developer returns: implementation file paths + test results │
+│  ⚠ Tests run inside dev Docker:                              │
+│    docker compose -f docker-compose.dev.yml exec app pytest  │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 3: VALIDATE — Tester verifies in dev Docker           │
+│                                                              │
+│  Call Task tool → subagent_type: "general"                   │
+│  Provide tester with:                                        │
+│    - Original task description                               │
+│    - Test file paths                                         │
+│    - Implementation file paths                               │
+│    - "Run all tests in dev Docker. Add edge cases if needed."│
+│                                                              │
+│  Tester returns:                                             │
+│    - PASS → continue to Phase 4                              │
+│    - FAIL → back to Phase 2 with failure details             │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 4: REVIEW — Code Reviewer (Minimax M2.5)             │
+│                                                              │
+│  Switch to review mode OR call Task tool                     │
+│  Provide reviewer with:                                      │
+│    - Task description                                        │
+│    - All changed files (implementation + tests)              │
+│    - Project conventions                                     │
+│                                                              │
+│  Reviewer returns verdict:                                   │
+│    - APPROVED → Phase 5                                      │
+│    - ISSUES_FOUND → Phase 2 with fix list (count: N)        │
+│    - DEBATE_NEEDED → Phase 4a                                │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 4a: DEBATE (if reviewer requests)                    │
+│                                                              │
+│  Present reviewer's concern to developer                     │
+│  Collect developer's counter-argument                        │
+│  Present developer's argument to reviewer                    │
+│  Collect reviewer's response                                 │
+│                                                              │
+│  Max 2 review cycles total.                                  │
+│  After 2nd rejection → ESCALATE (Phase 4b)                  │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 4b: ESCALATION — Ask the user                        │
+│                                                              │
+│  Use the question tool to present:                           │
+│    - Task name                                               │
+│    - Developer's argument (detailed, with code proof)        │
+│    - Reviewer's argument (detailed, with severity + risks)   │
+│    - Radio button options for resolution                     │
+│                                                              │
+│  User decides. Implement their choice.                       │
+│  Log both arguments to finding.md.                           │
+│  Continue to Phase 5.                                        │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 5: DOCUMENT + COMMIT                                 │
+│                                                              │
+│  a) Tear down dev Docker:                                    │
+│     docker compose -f docker-compose.dev.yml down            │
+│  b) Update todo.md — mark task as done                      │
+│  c) Update changelog.md — describe what changed              │
+│  d) Write finding.md — any P2/P3 issues reviewer flagged    │
+│  e) Commit with detailed message (see format below)          │
+│                                                              │
+│  Then pick next task from todo.md → back to Phase 0.        │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│  ALL TASKS DONE?                                             │
+│                                                              │
+│  Execute deployment procedure from deployment.md:            │
+│  1. Tear down dev Docker (if still running)                  │
+│  2. Run full CI: lint, format, typecheck, test in dev Docker │
+│  3. docker compose build --no-cache                          │
+│  4. docker compose up -d                                     │
+│  5. Health check                                             │
+│                                                              │
+│  Report deployment status to user.                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Task Tool Usage
+
+When calling the Task tool for sub-agents, ALWAYS provide:
+
+```
+description: "<role>: <task name>"
+prompt: |
+  ## Your Role
+  <concise role description from agent file>
+
+  ## Task
+  <what needs to be done>
+
+  ## Context
+  <ONLY the information this agent needs>
+  - Relevant file paths and their contents
+  - Project conventions
+  - Test file paths (for developer)
+  - Implementation file paths (for tester validation)
+
+  ## Success Criteria
+  <how to know the task is complete>
+
+  ## Constraints
+  <what NOT to do>
+  - Do NOT modify files outside the scope
+  - Do NOT add dependencies without asking
+  - Do NOT change the test file (developer only)
+
+  ## Return Format
+  <what the agent must return when done>
+subagent_type: "general" | "python-dev" | "explore"
+```
+
+## Escalation Format
+
+When 2 review rounds are exhausted, use the question tool:
+
+```
+header: "Escalation: <task name>"
+question: |
+  Developer and Reviewer disagree after 2 review rounds.
+
+  Task: <task description>
+
+  Developer's position:
+  <developer's detailed argument with code references>
+
+  Reviewer's position:
+  <reviewer's detailed argument with severity and risk assessment>
+
+  Choose resolution:
+options:
+  - label: "Accept developer's approach"
+    description: "<1-line summary of dev's approach>"
+  - label: "Accept reviewer's suggestion"
+    description: "<1-line summary of reviewer's approach>"
+  - label: "Hybrid compromise"
+    description: "Merge both approaches"
+  - label: "Skip this task"
+    description: "Move to next task, leave unresolved"
+```
+
+## Commit Message Format
+
 ```
 <type>: <short description>
 
-<detailed body explaining WHY, not just WHAT>
+<detailed body explaining WHY>
 
-- Added X for Y reason
-- Fixed Z by doing W
-- Changed behavior: before... after...
+Changes:
+- <file>: <what changed>
+- <file>: <what changed>
 
-Related to: #<issue-number>
+Tests:
+- <test file>: <test cases added/modified>
+
+Review:
+- Reviewer: <APPROVED | accepted after N rounds>
+- Findings logged: <finding.md reference>
+
+Related to: #<issue>
 ```
 
-### Types
+## Commit Types
 - `feat:` - New feature
 - `fix:` - Bug fix
 - `refactor:` - Code refactoring (no behavior change)
@@ -69,7 +303,7 @@ Related to: #<issue-number>
 - `chore:` - Build, tooling, dependencies
 - `perf:` - Performance improvement
 
-### Never Commit
+## Never Commit
 - Debug prints or logging
 - Commented-out code
 - TODO placeholders
@@ -78,75 +312,40 @@ Related to: #<issue-number>
 
 ## Quality Gates
 
-Before any commit:
-1. `ruff check .` (Python) or `biome check .` (JS/TS)
-2. `ruff format .` (Python) or `biome format --write .` (JS/TS)
-3. `mypy .` (Python)
+Before ANY commit, ensure:
+1. Lint passes: `ruff check .` or `biome check .`
+2. Format clean: `ruff format .` or `biome format --write .`
+3. Typecheck passes: `mypy .` or `tsc --noEmit`
 4. All tests pass
 
-## Setup Hook (Stateful Projects)
+## Project Type Detection
 
-For projects with `scripts/setup-dev.sh`:
-- **NEVER run manually**
-- Automatically executed by hook before tests
-- If setup fails, DO NOT proceed with tests
-- Fix the setup script first
+### Stateless Projects
+- No Docker dependencies (database, cache, etc.)
+- Tests run directly
+- Skip dev Docker setup (no Phase 0)
 
-## Code Standards
+### Stateful Projects
+- Require database, cache, or other Docker services
+- `docker-compose.dev.yml` exists in project root
+- Phase 0 builds and starts dev containers
+- All tests run inside dev containers
+- If dev build fails → report to user, do NOT proceed
 
-### Python
-- Type hints on ALL functions (parameters AND return)
-- Google-style docstrings
-- `src/` layout for packages
-- Import order: stdlib → third-party → local
+## Language Detection for Agent Selection
 
-### JavaScript/TypeScript
-- Strict TypeScript
-- Functional components (React)
-- Named exports preferred
-- Biome for formatting and linting
+- Task involves `.py` files → delegate to `agents/python-dev.md`
+- Task involves `.ts/.tsx/.js/.jsx` files → delegate to `agents/js-ts-dev.md`
+- Mixed project → use the primary language agent, share context between both
+- When unsure → check `product.md` for tech stack
 
-## Tooling Commands by Language
+## Important Rules
 
-### Python
-| Tool | Check | Fix | Config |
-|------|-------|-----|--------|
-| ruff | `ruff check .` | `ruff check --fix .` | `pyproject.toml` |
-| mypy | `mypy .` | N/A | `pyproject.toml` |
-| pytest | `pytest` | N/A | `pyproject.toml` |
-
-### TypeScript/JavaScript
-| Tool | Check | Fix | Config |
-|------|-------|-----|--------|
-| biome | `biome check .` | `biome check --write .` | `biome.json` |
-| tsc | `tsc --noEmit` | N/A | `tsconfig.json` |
-
-## Documentation Standards
-
-### Required Project Files
-Each project should have:
-- `product.md` - What the project is and does
-- `todo.md` - Current and planned work
-- `context.md` - Technical patterns and conventions
-- `changelog.md` - Change history
-
-### Documentation Updates
-- Update `changelog.md` at end of each session
-- Move completed items from `todo.md` to `changelog.md`
-- Update `context.md` when adopting new patterns
-
-## Multi-Project Session Workflow
-
-1. **Identify scope**: Is the task within one project or cross-project?
-2. **Check dependencies**: Are required endpoints/fields available?
-3. **Update parent docs**: If cross-project, update parent `todo.md`
-4. **Implement in order**: Start with dependencies, then dependents
-5. **Test integration**: Verify projects work together
-
-## Skills
-
-Available skills for enhanced workflows:
-- `planning` - Structured feature planning
-- `code-review` - Severity-based review
-- `test-generation` - Comprehensive test patterns
-- `project-analysis` - Codebase structure discovery
+1. **You are orchestrator. You do NOT write implementation code.**
+2. **You do NOT skip pipeline phases.** Every task goes through Red-Green-Refactor.
+3. **You provide ONLY relevant context to each agent.** No information overload.
+4. **You track review cycle count.** Max 2, then escalate.
+5. **You ensure memory freshness.** Re-read instructions if context feels stale.
+6. **You commit after each completed task.** Not after all tasks.
+7. **You update docs before committing.** todo.md, changelog.md, finding.md.
+8. **You deploy only when ALL tasks in todo.md are done.**

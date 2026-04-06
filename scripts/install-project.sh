@@ -9,8 +9,6 @@ echo "Setting up project-specific OpenCode configuration..."
 mkdir -p "${PROJECT_OPENCODE}"
 mkdir -p "${SKILLS_DIR}"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
-
 if [ ! -f "${PROJECT_OPENCODE}/AGENTS.md" ]; then
     cat > "${PROJECT_OPENCODE}/AGENTS.md" << 'EOF'
 # Project-Specific Rules
@@ -22,6 +20,7 @@ At the start of EVERY session, FIRST read these files:
 2. `todo.md` - Current tasks and plans
 3. `context.md` - Important patterns and decisions
 4. `changelog.md` - Recent changes in previous sessions
+5. `deployment.md` - Deployment procedure
 
 ## Project Overrides
 
@@ -29,9 +28,9 @@ Add project-specific rules below this line.
 These take precedence over global config.
 
 EOF
-    echo "  - Created .opencode/AGENTS.md"
+    echo "  Created .opencode/AGENTS.md"
 else
-    echo "  - Skipped .opencode/AGENTS.md (exists)"
+    echo "  Skipped .opencode/AGENTS.md (exists)"
 fi
 
 if [ ! -f "$(pwd)/product.md" ]; then
@@ -46,7 +45,6 @@ if [ ! -f "$(pwd)/product.md" ]; then
 - Framework: [Django/FastAPI/React/Next.js/etc.]
 - Database: [PostgreSQL/MongoDB/etc.]
 - Cache: [Redis/Memcached]
-- Other: [list key technologies]
 
 ## Architecture
 [High-level architecture description]
@@ -60,10 +58,6 @@ project/
 └── config/           # Configuration
 ```
 
-## Key Dependencies
-- [Dependency 1]: [Purpose]
-- [Dependency 2]: [Purpose]
-
 ## Commands
 | Command | Purpose |
 |---------|---------|
@@ -75,14 +69,10 @@ project/
 |----------|-------------|----------|
 | `DATABASE_URL` | Database connection string | Yes |
 | `SECRET_KEY` | Application secret | Yes |
-
-## External Services
-- [Service 1]: [Purpose]
-- [Service 2]: [Purpose]
 EOF
-    echo "  - Created product.md"
+    echo "  Created product.md"
 else
-    echo "  - Skipped product.md (exists)"
+    echo "  Skipped product.md (exists)"
 fi
 
 if [ ! -f "$(pwd)/todo.md" ]; then
@@ -100,23 +90,10 @@ if [ ! -f "$(pwd)/todo.md" ]; then
 
 ### Done
 - [x] [Completed task]
-
-## Current Sprint
-
-### This Session
-- [ ] [Task for current session]
-
-### Next Steps
-- [ ] [Next task]
-- [ ] [Following task]
-
-## Backlog
-- [ ] [Future task 1]
-- [ ] [Future task 2]
 EOF
-    echo "  - Created todo.md"
+    echo "  Created todo.md"
 else
-    echo "  - Skipped todo.md (exists)"
+    echo "  Skipped todo.md (exists)"
 fi
 
 if [ ! -f "$(pwd)/context.md" ]; then
@@ -127,28 +104,23 @@ if [ ! -f "$(pwd)/context.md" ]; then
 
 ### Naming
 - Files: [naming convention]
-- Classes: [PascalCase/etc.]
+- Classes: [PascalCase]
 - Functions: [snake_case/camelCase]
 
 ### Patterns
 - Error handling: [How exceptions are handled]
 - Logging: [Logging library and format]
-- Configuration: [How config is loaded]
 
 ## Important Decisions
 
 ### [Decision 1]
 - Date: YYYY-MM-DD
 - Decision: [What was decided]
-- Rationale: [Why this approach]
+- Rationale: [Why]
 
 ## Gotchas
 
 ### [Issue 1]
-- Problem: [Description]
-- Workaround: [Solution]
-
-### [Issue 2]
 - Problem: [Description]
 - Workaround: [Solution]
 
@@ -157,14 +129,10 @@ if [ ! -f "$(pwd)/context.md" ]; then
 |------|---------|
 | `src/config.py` | Configuration management |
 | `tests/conftest.py` | Test fixtures |
-| `src/utils/` | Shared utilities |
-
-## Learned Lessons
-- [Lesson 1]: [Description]
 EOF
-    echo "  - Created context.md"
+    echo "  Created context.md"
 else
-    echo "  - Skipped context.md (exists)"
+    echo "  Skipped context.md (exists)"
 fi
 
 if [ ! -f "$(pwd)/changelog.md" ]; then
@@ -172,23 +140,6 @@ if [ ! -f "$(pwd)/changelog.md" ]; then
 # Changelog
 
 All notable changes to this project are documented here.
-
-## [Unreleased]
-
-### Added
-- [Feature 1]: [Description]
-
-### Changed
-- [Change 1]: [Description]
-
-### Fixed
-- [Fix 1]: [Description]
-
-### Deprecated
-- [Deprecation]: [Description]
-
-### Removed
-- [Removal]: [Description]
 
 ---
 
@@ -199,19 +150,61 @@ All notable changes to this project are documented here.
 
 ### Changes
 - Modified `file.py`: [What changed]
-
-### Notes
-- [Any observations or notes]
 EOF
-    echo "  - Created changelog.md"
+    echo "  Created changelog.md"
 else
-    echo "  - Skipped changelog.md (exists)"
+    echo "  Skipped changelog.md (exists)"
+fi
+
+if [ ! -f "$(pwd)/deployment.md" ]; then
+    cat > "$(pwd)/deployment.md" << 'EOF'
+# Deployment Procedure
+
+## Project-Specific Deployment
+
+This project uses the universal deployment paradigm from the global config.
+Override or add project-specific deployment steps below.
+
+### Services
+| Service | Internal Port | Dev External | Prod External |
+|---------|--------------|-------------|--------------|
+| app | 8000 | 58000 | 8000 |
+| nginx | 80 | 580 | 80 |
+| db | 5432 | 55432 | 5432 |
+
+### Health Check
+```bash
+curl -f http://localhost:8000/health || echo "HEALTH CHECK FAILED"
+```
+
+### Project-Specific Steps
+<!-- Add any project-specific deploy steps here -->
+EOF
+    echo "  Created deployment.md"
+else
+    echo "  Skipped deployment.md (exists)"
+fi
+
+if [ ! -f "$(pwd)/finding.md" ]; then
+    cat > "$(pwd)/finding.md" << 'EOF'
+# Findings
+
+Unresolved issues and reviewer comments from completed tasks.
+
+---
+
+<!-- Add new sessions below this line -->
+EOF
+    echo "  Created finding.md"
+else
+    echo "  Skipped finding.md (exists)"
 fi
 
 echo ""
-echo "✓ Project setup complete!"
+echo "Done. Project files created."
 echo ""
 echo "Next steps:"
 echo "  1. Edit product.md with your project details"
 echo "  2. Update todo.md with initial tasks"
-echo "  3. For stateful projects, run: ./path/to/openconfig/scripts/bootstrap.sh --stateful"
+echo "  3. Edit deployment.md with your service ports"
+echo "  4. For stateful projects, create docker-compose.dev.yml"
